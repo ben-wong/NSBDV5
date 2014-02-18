@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:esri="http://www.esri.com/2008/ags"
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 xmlns:layers="com.arcie.nsbd.layers.*"
+		 xmlns:tocbar="com.arcie.nsbd.layers.*"
+		 xmlns:mapcontrol="com.arcie.nsbd.mapcontrol.*"
+		 creationComplete="MapCreateComplete()">
+	
+	<!--
+	* 导航页和消息窗口样式
+	-->
+		<fx:Style>
+		@namespace esri "http://www.esri.com/2008/ags";
+		esri|ContentNavigator
+		{
+			headerColor: #FFFFFF;
+			headerBackgroundAlpha: 1.0;
+			headerBackgroundColor: #353930;
+		}
+		
+		esri|InfoWindow
+		{
+			backgroundAlpha: 0.8;
+			backgroundColor: #353930;
+			borderThickness: 0;
+			infoPlacement: top;
+			shadowAlpha: 0.5;
+			shadowDistance: 10;
+			upperRightRadius: 0;
+		}
+	</fx:Style>
+	
+	
+	
+	<fx:Declarations>
+		<esri:MapPoint id="clickLocation"/>
+		<!-- Symbol for where the user clicked -->
+		<esri:SimpleMarkerSymbol id="clickPtSym"
+								 color="0xFF0000"
+								 size="12"
+								 style="cross">
+			<esri:SimpleLineSymbol width="2" color="0xFFFFFF"/>
+		</esri:SimpleMarkerSymbol>
+		
+		<!-- Symbol for Identify Result as Point -->
+		<esri:SimpleMarkerSymbol id="smsIdentify"
+								 alpha="0.5"
+								 color="0x00FFFF"
+								 size="20"
+								 style="circle"/>
+		
+		<!-- Identify Task -->
+		<esri:IdentifyTask id="identifyTask"
+						   concurrency="last"
+						   showBusyCursor="true"
+						   url="http://win-w15vzfmyjy7:8399/arcgis/rest/services/river/MapServer"/>
+		
+		<mapcontrol:IdentifyFeature id="identifyFeature"
+									graphicsLayer="{identifyGraphicsLayer}" 
+									map="{mainMap}"
+									clickLocation ="{clickLocation}"
+									identifyTask = "{identifyTask}"
+									clickPtSym = "{clickPtSym}"
+									smsIdentify = "{smsIdentify}"
+									/>
+	</fx:Declarations>
+	
+	
+	<fx:Script>
+		<![CDATA[
+			import com.arcie.nsbd.mapcontrol.MapCoordinatesShowTool;
+			import mx.events.FlexEvent;
+			
+			private function MapCreateComplete():void
+			{
+				var statusBar:MapCoordinatesShowTool = new MapCoordinatesShowTool(); 
+				statusBar.map = mainMap;
+				mainMap.addChild(statusBar);   
+			}
+			
+			import com.esri.ags.events.MapMouseEvent;
+			
+			[Bindable] public var list:Object = new Object();   
+			[Bindable] public var tabCODE:String;
+			[Bindable] public var tabNAME:String;
+			public function clickFun(event:MapMouseEvent):void{   
+				identifyFeature.mapClickHandler(event);
+			}   
+			
+			import com.arcie.nsbd.layers.TocTree;
+			
+			
+		]]>
+	</fx:Script>
+	
+	<esri:Map zoomDuration="3" id="mainMap" mapClick="clickFun(event)" creationComplete="identifyFeature.showCoordinatesWithMouse(event)">
+		
+		<layers:TDT_MapServiceLayer  id="baseMap_wmt" 
+									 baseURL="http://t0.tianditu.com/vec_c/wmts" 
+									 serviceMode="KVP"
+									 imageFormat="tiles" 
+									 tileMatrixSetId="c" 
+									 layerId="vec"
+									 visible="{btnBaseMaps.selectedIndex == 0}"/> 
+		
+		<layers:TDT_MapServiceLayer  id="PlaceName_cva" 
+									 baseURL="http://t0.tianditu.com/cva_c/wmts" 
+									 serviceMode="KVP" 
+									 imageFormat="tiles"
+									 tileMatrixSetId="c" 
+									 layerId="cva"
+									 visible="{btnBaseMaps.selectedIndex == 0}"/> 
+		
+		<layers:TDT_MapServiceLayer  id="baseMap_img" 
+									 baseURL="http://t0.tianditu.com/img_c/wmts" 
+									 serviceMode="KVP" 
+									 imageFormat="tiles" 
+									 tileMatrixSetId="c" 
+									 layerId="img"
+									 visible="{btnBaseMaps.selectedIndex == 1}"/> 
+		<layers:TDT_MapServiceLayer  id="PlaceName_cia" 
+									 baseURL="http://t0.tianditu.com/cia_c/wmts" 
+									 serviceMode="KVP" 
+									 imageFormat="tiles"
+									 tileMatrixSetId="c" 
+									 layerId="cia"
+									 visible="{btnBaseMaps.selectedIndex == 1}"/> 
+		
+		<layers:TDT_MapServiceLayer  id="baseMap_ter" 
+									 baseURL="http://t0.tianditu.com/ter_c/wmts" 
+									 serviceMode="KVP" 
+									 imageFormat="tiles" 
+									 tileMatrixSetId="c" 
+									 layerId="ter"
+									 visible="{btnBaseMaps.selectedIndex == 2}"/> 
+		
+		<layers:TDT_MapServiceLayer  id="PlaceName_cta" 
+									 baseURL="http://t0.tianditu.com/cta_c/wmts" 
+									 serviceMode="KVP" 
+									 imageFormat="tiles"
+									 tileMatrixSetId="c" 
+									 layerId="cta"
+									 visible="{btnBaseMaps.selectedIndex == 2}"/> 
+		
+		<!-- 调用ArcGISDynamicMapServiceLayer加载ArcGIS Server发布的河流水系矢量图层 -->
+		<esri:ArcGISDynamicMapServiceLayer id="mapServer" 
+										   url="http://win-w15vzfmyjy7:8399/arcgis/rest/services/WRZL/MapServer" />
+		
+		<esri:GraphicsLayer id="identifyGraphicsLayer"/>
+	</esri:Map>
+	
+	<!-- 顶部切换天地图底图的按钮组  -->
+	<s:ButtonBar id="btnBaseMaps"
+				 left="400" top="5"
+				 requireSelection="true">
+		<s:dataProvider>
+			<s:ArrayList>
+				<fx:String>矢量图</fx:String>
+				<fx:String>影像图</fx:String>
+				<fx:String>地形图</fx:String>
+			</s:ArrayList>
+		</s:dataProvider>
+	</s:ButtonBar>
+	
+	<s:BorderContainer height="237" width="162" cornerRadius="5" left="14" bottom="50"> 	
+		<tocbar:TocTree id="tocTree" mapLayer="{mapServer}" width="160" height="235"/>
+	</s:BorderContainer>
+	
+</s:Group>
