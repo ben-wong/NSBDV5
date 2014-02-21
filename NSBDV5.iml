@@ -4,6 +4,11 @@
     <configurations>
       <configuration name="NSBDV5" main-class="NSBDV5" output-file="NSBDV5.swf" output-folder="$MODULE_DIR$/out/production/NSBDV5" use-html-wrapper="true" wrapper-template-path="$MODULE_DIR$/html-template">
         <dependencies target-player="11.1">
+          <entries>
+            <entry library-name="agslib-3.1-2012-12-12" library-level="project">
+              <dependency linkage="Merged" />
+            </entry>
+          </entries>
           <sdk name="4.6.0" />
         </dependencies>
         <compiler-options />
@@ -21,6 +26,8 @@
     </content>
     <orderEntry type="jdk" jdkName="4.6.0" jdkType="Flex SDK Type (new)" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" exported="" name="agslib-3.1-2012-12-12" level="project" />
+    <orderEntry type="library" exported="" name="flexlib" level="project" />
   </component>
 </module>
 

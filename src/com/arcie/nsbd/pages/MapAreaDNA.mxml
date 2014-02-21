@@ -1,188 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
-		 xmlns:s="library://ns.adobe.com/flex/spark"
-		 xmlns:esri="http://www.esri.com/2008/ags"
-		 xmlns:mx="library://ns.adobe.com/flex/mx"
-		 xmlns:mx1="library://ns.adobe.com/flex/mx"
-		 xmlns:layers="com.arcie.nsbd.layers.*"
-		 xmlns:pages="com.arcie.nsbd.pages.*"
-		 xmlns:mapcontrol="com.arcie.nsbd.mapcontrol.*"
-		 creationComplete="MapCreateComplete()">
-	
-	<fx:Declarations>
-		
-		
-		<mapcontrol:DistrictTreeMenuTool id="menuTreeTool"					 
-										 queryTaskProvince="{queryTaskProvince}"
-										 queryTaskCity="{queryTaskCity}"
-										 queryTaskCounty="{queryTaskCounty}"
-										 districtMenuTree="{districtMenuTree}"
-										 districtGraphicsLayer="{identifyGraphicsLayer}"
-										 query="{query}"
-										 map="{mainMap}"
-										 region="{regionOverview}"
-										 />
-		
-		<esri:QueryTask id="queryTaskProvince" executeComplete=" menuTreeTool.executeCompleteHandler(event)"
-						url="http://win-w15vzfmyjy7:8399/arcgis/rest/services/ReservoirAreaDNA/MapServer/10"
-						useAMF="false"/>
-		
-		<esri:QueryTask id="queryTaskCity" executeComplete=" menuTreeTool.executeCompleteHandler(event)"
-						url="http://win-w15vzfmyjy7:8399/arcgis/rest/services/ReservoirAreaDNA/MapServer/11"
-						useAMF="false"/>
-		
-		<esri:QueryTask id="queryTaskCounty" executeComplete=" menuTreeTool.executeCompleteHandler(event)"
-						url="http://win-w15vzfmyjy7:8399/arcgis/rest/services/ReservoirAreaDNA/MapServer/12"
-						useAMF="false"/>
-		
-		<esri:Query id="query" outSpatialReference="{mainMap.spatialReference}" outFields="*" returnGeometry="true"/>		
-		<fx:XML id="treeXML" source="com/arcie/nsbd/layers/DistrictTreeData.xml" />
-	
-	</fx:Declarations>
-	
-	
-	<fx:Script>
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:esri="http://www.esri.com/2008/ags"
+         xmlns:layers="com.arcie.nsbd.layers.*"
+         creationComplete="MapCreateComplete()">
+
+    <fx:Script>
 		<![CDATA[
-			import com.arcie.nsbd.mapcontrol.MapCoordinatesShowTool;
-			import com.esri.ags.events.QueryEvent;
-			import mx.controls.Alert;
-			import mx.events.FlexEvent;
-			import mx.events.ListEvent;
-			import mx.rpc.events.ResultEvent;
-			
+        //地图初始化
+        private function MapCreateComplete():void {
 
-			
-			//地图初始化
-			private function MapCreateComplete():void
-			{
-				var statusBar:MapCoordinatesShowTool = new MapCoordinatesShowTool(); 
-				statusBar.map = mainMap;
-				statusBar.right = 20;
-				mainMap.addChild(statusBar); 
-				
-				initTreeData();
-			}
-			
-			//获取属性菜单的XML文件结构
-			public function initTreeData():void{ 
-	  
-				districtMenuTree.dataProvider = treeXML;  
-				districtMenuTree.labelField = "@label";
-				districtMenuTree.callLater(expandTree);
-			}
-			
-			//展开所有的节点
-			private function expandTree():void{  
-				
-
-				districtMenuTree.expandChildrenOf(treeXML, true);
-			} 
-	
-		]]>
+        }
+        ]]>
 	</fx:Script>
-	
-	<esri:Map id="mainMap" 
-			  zoomDuration="3" 
-			  logoVisible = "false"
-			  zoomSliderVisible = "false">
-		
-		<!-- 调用TDT_MapServiceLayer加载天地图提供的瓦片图层，依次加载底图和地名层 -->
-		<layers:TDT_MapServiceLayer  id="baseMap_wmt" 
-									 baseURL="http://t0.tianditu.com/vec_c/wmts" 
-									 serviceMode="KVP"
-									 imageFormat="tiles" 
-									 tileMatrixSetId="c" 
-									 layerId="vec"
-									 visible="{btnBaseMaps.selectedIndex == 0}"/> 
-		
-		<layers:TDT_MapServiceLayer  id="PlaceName_cva" 
-									 baseURL="http://t0.tianditu.com/cva_c/wmts" 
-									 serviceMode="KVP" 
-									 imageFormat="tiles"
-									 tileMatrixSetId="c" 
-									 layerId="cva"
-									 visible="{btnBaseMaps.selectedIndex == 0}"/> 
-		
-		<layers:TDT_MapServiceLayer  id="baseMap_img" 
-									 baseURL="http://t0.tianditu.com/img_c/wmts" 
-									 serviceMode="KVP" 
-									 imageFormat="tiles" 
-									 tileMatrixSetId="c" 
-									 layerId="img"
-									 visible="{btnBaseMaps.selectedIndex == 1}"/> 
-		<layers:TDT_MapServiceLayer  id="PlaceName_cia" 
-									 baseURL="http://t0.tianditu.com/cia_c/wmts" 
-									 serviceMode="KVP" 
-									 imageFormat="tiles"
-									 tileMatrixSetId="c" 
-									 layerId="cia"
-									 visible="{btnBaseMaps.selectedIndex == 1}"/> 
-		
-		<layers:TDT_MapServiceLayer  id="baseMap_ter" 
-									 baseURL="http://t0.tianditu.com/ter_c/wmts" 
-									 serviceMode="KVP" 
-									 imageFormat="tiles" 
-									 tileMatrixSetId="c" 
-									 layerId="ter"
-									 visible="{btnBaseMaps.selectedIndex == 2}"/> 
-		
-		<layers:TDT_MapServiceLayer  id="PlaceName_cta" 
-									 baseURL="http://t0.tianditu.com/cta_c/wmts" 
-									 serviceMode="KVP" 
-									 imageFormat="tiles"
-									 tileMatrixSetId="c" 
-									 layerId="cta"
-									 visible="{btnBaseMaps.selectedIndex == 2}"/> 
-		
-		<!-- 调用ArcGISDynamicMapServiceLayer加载ArcGIS Server发布的河流水系矢量图层 -->
-		<esri:ArcGISDynamicMapServiceLayer id="mapServer" 
-										   url="http://win-w15vzfmyjy7:8399/arcgis/rest/services/ReservoirAreaDNA/MapServer" />
-		
-		<esri:GraphicsLayer id="identifyGraphicsLayer"/>
-		
-		<esri:FeatureLayer outFields="*"
-						   url="http://win-w15vzfmyjy7:8399/arcgis/rest/services/ReservoirAreaDNA/MapServer/5">
-			<esri:infoWindowRenderer>
-				<fx:Component>
-					<mapcontrol:PopupInfoRender data="{data}"/>
-				</fx:Component>
-			</esri:infoWindowRenderer>
-		</esri:FeatureLayer>
-		
-	</esri:Map>
 
-	
-	
-	<!-- 顶部切换天地图底图的按钮组  -->
-	<s:ButtonBar id="btnBaseMaps"
-				 left="400" top="5"
-				 requireSelection="true">
-		<s:dataProvider>
-			<s:ArrayList>
-				<fx:String>矢量图</fx:String>
-				<fx:String>影像图</fx:String>
-				<fx:String>地形图</fx:String>
-			</s:ArrayList>
-		</s:dataProvider>
-	</s:ButtonBar>
-	
-	<s:BorderContainer height="662" width="212" cornerRadius="5" 
-					   top="50" left="20"> 
-		<s:layout>
-			<s:VerticalLayout 
-				paddingLeft="5" paddingRight="5" 
-				paddingTop="5" paddingBottom="5"/>
-		</s:layout>
+    <esri:Map id="mainMap"
+              logoVisible="false"
+              zoomSliderVisible="false">
 
-		<mx:Tree id="districtMenuTree" width="200" height="400" borderStyle="solid" 
-				 itemClick="menuTreeTool.itemClickHandler(event)" itemRenderer="com.arcie.nsbd.layers.DistrictMenuTreeSkin"
-				 labelField="@label" selectionColor="0x0000FF" showRoot="true">		
-		</mx:Tree>
-		<layers:TocTree id="tocTree" mapLayer="{mapServer}" width="200" height="240"/>
-	</s:BorderContainer>
-	
-	<s:BorderContainer cornerRadius="0" right="0" top="0"> 	
-		<pages:RegionOverview id="regionOverview" width="300" height="100%"/>
-	</s:BorderContainer>
-	
+        <!-- 调用TDT_MapServiceLayer加载天地图提供的瓦片图层，依次加载底图和地名层 -->
+        <layers:TDT_MapServiceLayer id="baseMap_wmt"
+                                    baseURL="http://t0.tianditu.com/vec_c"
+                                    serviceMode="KVP"
+                                    imageFormat="tiles"
+                                    tileMatrixSetId="c"
+                                    layerId="vec"
+                                    visible="{btnBaseMaps.selectedIndex == 0}"/>
+
+        <layers:TDT_MapServiceLayer id="PlaceName_cva"
+                                    baseURL="http://t0.tianditu.com/cva_c"
+                                    serviceMode="KVP"
+                                    imageFormat="tiles"
+                                    tileMatrixSetId="c"
+                                    layerId="cva"
+                                    visible="{btnBaseMaps.selectedIndex == 0}"/>
+
+        <layers:TDT_MapServiceLayer id="baseMap_img"
+                                    baseURL="http://t0.tianditu.com/img_c"
+                                    serviceMode="KVP"
+                                    imageFormat="tiles"
+                                    tileMatrixSetId="c"
+                                    layerId="img"
+                                    visible="{btnBaseMaps.selectedIndex == 1}"/>
+        <layers:TDT_MapServiceLayer id="PlaceName_cia"
+                                    baseURL="http://t0.tianditu.com/cia_c"
+                                    serviceMode="KVP"
+                                    imageFormat="tiles"
+                                    tileMatrixSetId="c"
+                                    layerId="cia"
+                                    visible="{btnBaseMaps.selectedIndex == 1}"/>
+
+        <layers:TDT_MapServiceLayer id="baseMap_ter"
+                                    baseURL="http://t0.tianditu.com/ter_c"
+                                    serviceMode="KVP"
+                                    imageFormat="tiles"
+                                    tileMatrixSetId="c"
+                                    layerId="ter"
+                                    visible="{btnBaseMaps.selectedIndex == 2}"/>
+
+        <layers:TDT_MapServiceLayer id="PlaceName_cta"
+                                    baseURL="http://t0.tianditu.com/cta_c"
+                                    serviceMode="KVP"
+                                    imageFormat="tiles"
+                                    tileMatrixSetId="c"
+                                    layerId="cta"
+                                    visible="{btnBaseMaps.selectedIndex == 2}"/>
+
+        <!-- 调用ArcGISDynamicMapServiceLayer加载ArcGIS Server发布的河流水系矢量图层 -->
+        <esri:ArcGISDynamicMapServiceLayer id="mapServer"
+                                           url="http://win-w15vzfmyjy7:8399/arcgis/rest/services/ReservoirAreaDNA/MapServer"/>
+
+        <esri:GraphicsLayer id="identifyGraphicsLayer"/>
+
+
+    </esri:Map>
+
+    <!-- 顶部切换天地图底图的按钮组  -->
+    <s:ButtonBar id="btnBaseMaps"
+                 left="40" top="5"
+                 requireSelection="true">
+        <s:dataProvider>
+            <s:ArrayList>
+                <fx:String>矢量图</fx:String>
+                <fx:String>影像图</fx:String>
+                <fx:String>地形图</fx:String>
+            </s:ArrayList>
+        </s:dataProvider>
+    </s:ButtonBar>
+
+
 </s:Group>

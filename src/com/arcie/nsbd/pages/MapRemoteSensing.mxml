@@ -1,148 +1,213 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx"
-		 xmlns:esri="http://www.esri.com/2008/ags"
-		 xmlns:layers="com.arcie.nsbd.layers.*"
-		 creationComplete="MapCreateComplete()">
-	
-	<fx:Script>
-		<![CDATA[
-			import com.arcie.nsbd.mapcontrol.MapCoordinatesShowTool;
-			import mx.events.ListEvent
-			
-			private function MapCreateComplete():void
-			{
-				var statusBar:MapCoordinatesShowTool = new MapCoordinatesShowTool(); 
-				statusBar.map = mainMap;
-				mainMap.addChild(statusBar); 
-				
-				
-				var baseItem:Object = rmTree.firstVisibleItem;
-				rmTree.expandChildrenOf(baseItem, true);
-				rmTree.selectedIndex = 1;
-			}
-			 
-			 // 树形菜单的点击事件，显示对应的地图服务	 
-			internal function clickItem(evt:ListEvent):void{
-				var path:String = evt.currentTarget.selectedItem.@path;
-				if(path.length <= 0)
-					return;
-				
-				mapServer.url="http://win-w15vzfmyjy7:8399/arcgis/rest/services/"+path+"/MapServer";
-				mapServer.visible=true;	
-			}
-		]]>
-	</fx:Script>
-	
-	<fx:Declarations>
-		<!-- 树形菜单控件的内容 -->
-		<s:XMLListCollection id="treeItems">
-			<fx:XMLList id="treeXML">
-				<folder label="遥感信息" >
-					<folder label="水土流失" >
-						<folder label="2000年 " path= "STLS2000"/>
-						<folder label="2009年" path= "STLS2009"/>
-						<folder label="2011年" path= "STLS2011"/>
-					</folder>
-					<folder label="土地覆被">
-						<folder label="2000年" path= "TDFB2000"/>
-						<folder label="2009年" path= "TDFB2009"/>
-						<folder label="2011年" path= "TDFB2010"/>
-					</folder>
-					<folder label="植被覆盖">
-						<folder label="2000年" path= "ZBFG2000"/>
-						<folder label="2009年" path= "ZBFG2009"/>
-						<folder label="2011年" path= "ZBFG2011"/>
-					</folder>
-				</folder>    
-			</fx:XMLList>
-		</s:XMLListCollection>
-	</fx:Declarations>
-	
-	<esri:Map id="mainMap" 
-			  zoomDuration="3" 
-			  logoVisible = "false"
-			  zoomSliderVisible = "false">
-		
-		<!-- 调用TDT_MapServiceLayer加载天地图提供的瓦片图层，依次加载底图和地名层 -->
-		<layers:TDT_MapServiceLayer  id="baseMap_img" 
-									 baseURL="http://t0.tianditu.com/img_c/wmts" 
-									 serviceMode="KVP" 
-									 imageFormat="tiles" 
-									 tileMatrixSetId="c" 
-									 layerId="img"
-									 visible="{btnBaseMaps.selectedIndex == 0}"/> 
-		<layers:TDT_MapServiceLayer  id="PlaceName_cia" 
-									 baseURL="http://t0.tianditu.com/cia_c/wmts" 
-									 serviceMode="KVP" 
-									 imageFormat="tiles"
-									 tileMatrixSetId="c" 
-									 layerId="cia"
-									 visible="{btnBaseMaps.selectedIndex == 0}"/> 
-		
-		<layers:TDT_MapServiceLayer  id="baseMap_wmt" 
-									 baseURL="http://t0.tianditu.com/vec_c/wmts" 
-									 serviceMode="KVP"
-									 imageFormat="tiles" 
-									 tileMatrixSetId="c" 
-									 layerId="vec"
-									 visible="{btnBaseMaps.selectedIndex == 1}"/> 
-		
-		<layers:TDT_MapServiceLayer  id="PlaceName_cva" 
-									 baseURL="http://t0.tianditu.com/cva_c/wmts" 
-									 serviceMode="KVP" 
-									 imageFormat="tiles"
-									 tileMatrixSetId="c" 
-									 layerId="cva"
-									 visible="{btnBaseMaps.selectedIndex == 1}"/> 
-		
-		<layers:TDT_MapServiceLayer  id="baseMap_ter" 
-									 baseURL="http://t0.tianditu.com/ter_c/wmts" 
-									 serviceMode="KVP" 
-									 imageFormat="tiles" 
-									 tileMatrixSetId="c" 
-									 layerId="ter"
-									 visible="{btnBaseMaps.selectedIndex == 2}"/> 
-		
-		<layers:TDT_MapServiceLayer  id="PlaceName_cta" 
-									 baseURL="http://t0.tianditu.com/cta_c/wmts" 
-									 serviceMode="KVP" 
-									 imageFormat="tiles"
-									 tileMatrixSetId="c" 
-									 layerId="cta"
-									 visible="{btnBaseMaps.selectedIndex == 2}"/> 
-		
-		<!-- 调用ArcGISDynamicMapServiceLayer加载ArcGIS Server发布的河流水系矢量图层 -->
-		<esri:ArcGISDynamicMapServiceLayer id="mapServer" 
-										   url="http://win-w15vzfmyjy7:8399/arcgis/rest/services/TDFB2010/MapServer" />
-		
-		<esri:GraphicsLayer id="identifyGraphicsLayer"/>
-	</esri:Map>
-	
-	<!-- 顶部切换天地图底图的按钮组  -->
-	<s:ButtonBar id="btnBaseMaps"
-				 left="400" top="5"
-				 requireSelection="true">
-		<s:dataProvider>
-			<s:ArrayList>
-				<fx:String>矢量图</fx:String>
-				<fx:String>影像图</fx:String>
-				<fx:String>地形图</fx:String>
-			</s:ArrayList>
-		</s:dataProvider>
-	</s:ButtonBar>
-	
-	<!--添加树形菜单控件-->
-	<s:BorderContainer height="237" width="162" cornerRadius="5" left="14" bottom="50"> 
-		<mx:Tree id="rmTree" 
-				 height="235"
-				 width="160"
-				 dataProvider="{treeItems}"  
-				 itemClick="clickItem(event)"
-				 labelField="@label" 
-				 showRoot="false">		
-		</mx:Tree>
-	</s:BorderContainer>
-	
+
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:esri="http://www.esri.com/2008/ags"
+         xmlns:layers="com.arcie.nsbd.layers.*"
+         xmlns:mx="library://ns.adobe.com/flex/mx"
+         initialize="initializeHandler(event)"
+         creationComplete="MapCreateComplete()">
+
+    <fx:Script>
+        <![CDATA[
+        import com.esri.ags.events.ExtentEvent;
+        import com.esri.ags.events.LayerEvent;
+
+        import mx.collections.ArrayCollection;
+        import mx.events.FlexEvent;
+
+        [Bindable]
+        public var MapType:ArrayCollection = new ArrayCollection(
+                [
+                    {label: "水土流失", data: 1},
+                    {label: "土地覆被", data: 2},
+                    {label: "植被覆盖", data: 3}
+                ]);
+
+        private function comboHandler(event:Event):void {
+
+        }
+
+        private var mapsArray:Array = [];
+
+        private var updatingMap:Map;
+
+        private function MapCreateComplete():void {
+            btnBaseMaps.selectedIndex = 1;
+        }
+
+        protected function initializeHandler(event:FlexEvent):void {
+            mapsArray = [ mapDNA, mapRS ];
+        }
+
+        protected function layer_loadHandler(event:LayerEvent):void {
+            for (var i:int = 0; i < mapsArray.length; i++) {
+                var map:Map = mapsArray[i];
+                map.extent = initialExtent;
+                map.addEventListener(ExtentEvent.EXTENT_CHANGE, extentChangeHandler, false, 0, true);
+                map.addEventListener(MouseEvent.MOUSE_WHEEL, actionStartHandler, true, 0, true);
+                map.addEventListener(MouseEvent.MOUSE_DOWN, actionStartHandler, true, 0, true);
+            }
+
+        }
+
+        protected function extentChangeHandler(event:ExtentEvent):void {
+            if (event.currentTarget == updatingMap && modelExtent.extent != event.extent) {
+                modelExtent = event.extent;
+                for (var i:int = 0; i < mapsArray.length; i++) {
+                    var map:Map = mapsArray[i];
+                    if (updatingMap != map) {
+                        map.extent = modelExtent;
+                    }
+                }
+            }
+        }
+
+        protected function getLayerName(layer:ArcGISDynamicMapServiceLayer):String {
+            return layer.name;
+        }
+
+        protected function resetMap_clickHandler(event:MouseEvent):void {
+            if (!updatingMap) {
+                updatingMap = mapsArray[0];
+            }
+            updatingMap.extent = initialExtent;
+        }
+
+        protected function actionStartHandler(event:Event):void {
+            updatingMap = event.currentTarget as Map;
+        }
+        ]]>
+    </fx:Script>
+
+    <fx:Declarations>
+        <!-- Place non-visual elements (e.g., services, value objects) here -->
+        <esri:Extent id="initialExtent"
+                     xmin="105" ymin="31" xmax="112" ymax="35">
+            <esri:SpatialReference wkid="4490"/>
+        </esri:Extent>
+        <esri:Extent id="modelExtent"
+                     xmin="105" ymin="31" xmax="112" ymax="35">
+            <esri:SpatialReference wkid="4490"/>
+        </esri:Extent>
+    </fx:Declarations>
+
+    <s:HGroup id="mapGroup"
+              width="100%" height="100%"
+              gap="1">
+
+        <esri:Map id="mapDNA"
+                  scaleBarVisible="false"
+                  zoomSliderVisible="false">
+
+            <layers:TDT_MapServiceLayer id="baseMap_wmt"
+                                        baseURL="http://t0.tianditu.com/vec_c"
+                                        serviceMode="KVP"
+                                        imageFormat="tiles"
+                                        tileMatrixSetId="c"
+                                        layerId="vec"
+                                        visible="{btnBaseMaps.selectedIndex == 0}"/>
+
+            <layers:TDT_MapServiceLayer id="PlaceName_cva"
+                                        baseURL="http://t0.tianditu.com/cva_c"
+                                        serviceMode="KVP"
+                                        imageFormat="tiles"
+                                        tileMatrixSetId="c"
+                                        layerId="cva"
+                                        visible="{btnBaseMaps.selectedIndex == 0}"/>
+
+            <layers:TDT_MapServiceLayer id="baseMap_img"
+                                        baseURL="http://t0.tianditu.com/img_c"
+                                        serviceMode="KVP"
+                                        imageFormat="tiles"
+                                        tileMatrixSetId="c"
+                                        layerId="img"
+                                        visible="{btnBaseMaps.selectedIndex == 1}"/>
+            <layers:TDT_MapServiceLayer id="PlaceName_cia"
+                                        baseURL="http://t0.tianditu.com/cia_c"
+                                        serviceMode="KVP"
+                                        imageFormat="tiles"
+                                        tileMatrixSetId="c"
+                                        layerId="cia"
+                                        visible="{btnBaseMaps.selectedIndex == 1}"/>
+
+            <layers:TDT_MapServiceLayer id="baseMap_ter"
+                                        baseURL="http://t0.tianditu.com/ter_c"
+                                        serviceMode="KVP"
+                                        imageFormat="tiles"
+                                        tileMatrixSetId="c"
+                                        layerId="ter"
+                                        visible="{btnBaseMaps.selectedIndex == 2}"/>
+
+            <layers:TDT_MapServiceLayer id="PlaceName_cta"
+                                        baseURL="http://t0.tianditu.com/cta_c"
+                                        serviceMode="KVP"
+                                        imageFormat="tiles"
+                                        tileMatrixSetId="c"
+                                        layerId="cta"
+                                        visible="{btnBaseMaps.selectedIndex == 2}"/>
+
+            <!--<esri:ArcGISDynamicMapServiceLayer id="operationalLayerA"-->
+            <!--url="http://win-w15vzfmyjy7:8399/arcgis/rest/services/ReservoirAreaDNA/MapServer" />-->
+
+        </esri:Map>
+
+        <esri:Map id="mapRS"
+                  scaleBarVisible="false"
+                  zoomSliderVisible="false">
+            <layers:TDT_MapServiceLayer id="baseMap_RS"
+                                        baseURL="http://t0.tianditu.com/vec_c"
+                                        serviceMode="KVP"
+                                        imageFormat="tiles"
+                                        tileMatrixSetId="c"
+                                        layerId="vec"/>
+            <layers:TDT_MapServiceLayer id="PlaceName_RS"
+                                        baseURL="http://t0.tianditu.com/cva_c"
+                                        serviceMode="KVP"
+                                        imageFormat="tiles"
+                                        tileMatrixSetId="c"
+                                        layerId="cva"/>
+
+            <esri:ArcGISDynamicMapServiceLayer id="layer_RS" load="layer_loadHandler(event)"
+                                               url="http://win-w15vzfmyjy7:8399/arcgis/rest/services/TDFB2010/MapServer"/>
+
+        </esri:Map>
+
+    </s:HGroup>
+    <!-- 顶部切换天地图底图的按钮组  -->
+    <s:ButtonBar id="btnBaseMaps"
+                 left="40" top="5"
+                 requireSelection="true">
+        <s:dataProvider>
+            <s:ArrayList>
+                <fx:String>矢量图</fx:String>
+                <fx:String>影像图</fx:String>
+                <fx:String>地形图</fx:String>
+            </s:ArrayList>
+        </s:dataProvider>
+    </s:ButtonBar>
+
+    <s:BorderContainer left="{mapDNA.width}" width="100%" height="60" borderVisible="false">
+        <s:layout>
+            <s:BasicLayout clipAndEnableScrolling="true"/>
+        </s:layout>
+        <s:backgroundFill>
+            <s:SolidColor color="0xf4f4ec"/>
+        </s:backgroundFill>
+
+        <mx:Label text="遥感图类型:" left="10" width="100" top="13"/>
+
+        <mx:ComboBox dataProvider="{MapType}" width="150" left="116" color="0x000000"
+                     top="12" close="comboHandler(event);"/>
+
+        <mx:HSlider id="slider" left="300" top="5"
+                    width="200"
+                    liveDragging="true"
+                    minimum="1"
+                    maximum="3"
+                    snapInterval="1"
+                    tickInterval="1"
+                    value="3"
+                    labels="['2000年','2009年','2010年']"/>
+    </s:BorderContainer>
 </s:Group>
