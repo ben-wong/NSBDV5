@@ -2,7 +2,7 @@
 <module type="Flex" version="4">
   <component name="FlexBuildConfigurationManager" active="NSBDV5">
     <configurations>
-      <configuration name="NSBDV5" main-class="NSBDV5" output-file="NSBDV5.swf" output-folder="$MODULE_DIR$/out/production/NSBDV5" use-html-wrapper="true" wrapper-template-path="$MODULE_DIR$/html-template">
+      <configuration name="NSBDV5" main-class="index" output-file="NSBDV5.swf" output-folder="$MODULE_DIR$/out/production/NSBDV5" use-html-wrapper="true" wrapper-template-path="$MODULE_DIR$/html-template">
         <dependencies target-player="11.1">
           <entries>
             <entry library-name="agslib-3.1-2012-12-12" library-level="project">
