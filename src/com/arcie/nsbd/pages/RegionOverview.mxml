@@ -1,0 +1,98 @@
+
+<flexlibContainer:WindowShade xmlns:fx="http://ns.adobe.com/mxml/2009"
+                              xmlns:s="library://ns.adobe.com/flex/spark"
+                              xmlns:mx="library://ns.adobe.com/flex/mx"
+                              xmlns:flexlibContainer="flexlib.containers.*"
+                              xmlns:flexlibControl="flexlib.controls.*"
+                              styleName="shade"
+                              label="区域概况"
+                              openIcon="@Embed('/assets/folder.png')"
+                              closeIcon="@Embed('/assets/folder.png')"
+                              creationComplete="CreateComplete()">
+
+    <fx:Script>
+		<![CDATA[
+        private function CreateComplete():void
+        {
+
+        }
+
+        public function refreshContents(itemData:Object):void
+        {
+            trace(itemData.CODE);
+            trace(itemData.名称);
+        }
+
+
+        ]]>
+	</fx:Script>
+
+
+    <flexlibContainer:headerRenderer>
+        <fx:Component>
+            <flexlibControl:CanvasButton width="30" height="30" styleName="shadeBtn">
+            </flexlibControl:CanvasButton>
+        </fx:Component>
+    </flexlibContainer:headerRenderer>
+
+    <mx:TabNavigator id="tn"  width="100%" height="100%" color="0x323232" >
+        <s:NavigatorContent id="ncProvince" label="省级区划">
+            <s:VGroup width="100%" height="100%">
+                <mx:Accordion id="accordionProvince" color="0x323232" width="100%" height="250">
+                    <!-- Define each panel using a VBox container. -->
+                    <s:NavigatorContent label="基本情况" width="100%" height="100%" icon="@Embed('/assets/Nav.png')" >
+                        <mx:TextArea id="province_jbqk" text="十堰市位于湖北省西北部，汉江中上游，是鄂、豫、陕、渝毗邻地区唯一的区域性中心城市。辖五县、一市、两区及武当山旅游经济特区、十堰经济开发区，总人口334万，总面积2.4万平方公里。" width="100%" height="100%"/>
+                    </s:NavigatorContent>
+                    <s:NavigatorContent label="自然" width="100%" height="100%" icon="@Embed('/assets/Nav.png')">
+                        <mx:TextArea id="province_zr" text="年平均气温15.2℃，降雨量 828毫米。森林覆盖率达53%。年平均气温15.2℃，降雨量 828毫米。森林覆盖率达53%。年平均气温15.2℃，降雨量 828毫米。森林覆盖率达53%。年平均气温15.2℃，降雨量 828毫米。森林覆盖率达53%。年平均气温15.2℃，降雨量 828毫米。森林覆盖率达53%。" width="100%" height="100%"/>
+                    </s:NavigatorContent>
+                    <s:NavigatorContent label="经济发展" width="100%" height="100%" icon="@Embed('/assets/Nav.png')">
+                        <mx:TextArea id="province_jjfz" text="2012年，全市实现生产总值（GDP）955.7亿元，比上年增长8.2%。三次产业结构比为12.7：51.3：36.0。人均生产总值为28471元。财政总收入120.7亿元，增长13%；全社会固定资产投资680亿元，增长30%；城镇居民人均可支配收入1.6万元、农民人均纯收入4570元，均增长13%；" width="100%" height="100%"/>
+                    </s:NavigatorContent>
+                </mx:Accordion>
+
+                <s:Graphic width="100%" height="200">
+                    <s:BitmapImage id="province_sjtp" source="@Embed('/resources/district/丹江口市.jpg')" />
+                </s:Graphic>
+            </s:VGroup>
+        </s:NavigatorContent>
+
+        <s:NavigatorContent id="ncCity" label="市级区划">
+            <s:VGroup width="100%" height="100%">
+                <mx:Accordion id="accordionCity" color="0x323232" width="100%" height="250">
+                    <s:NavigatorContent label="工业概况" width="100%" height="100%"  icon="@Embed('/assets/Nav.png')">
+                        <mx:TextArea id="city_gygk" text="2012年全市规模以上工业企业548家。全年完成规模以上工业增加值410.5亿元，增长6.0%。汽车工业增加值下降7.9%，医药制造业增长25.2%，纺织行业增长36.5%，化学制品业增长6.7%，有色金属冶炼业增长15.8%，黑色金属冶炼业增长36.5%，电力生产及供应业下降6.6%。" width="100%" height="100%"/>
+                    </s:NavigatorContent>
+                    <s:NavigatorContent label="污水处理厂" width="100%" height="100%" icon="@Embed('/assets/Nav.png')">
+                        <mx:TextArea id="city_wsclc" text="2011年10座污水处理厂竣工试运行，截至2012年2月，全市已经建成12座污水处理厂，总设计处理能力45.6万吨/日，共投资10.47亿元，其中国家投资8.15亿元，地方配套2.32亿元。除市城区西部污水处理厂外，其余11座污水处理厂均已投入运行，年消减COD约1.92万吨。市城区规划污水收集管网总长度472公里，其中已经建成181公里，“十二五”期间计划建设289公里；县市区已经建成污水收集管网309公里，“十二五”期间计划建设204公里。《规划》建设十堰市神定河污水处理厂（2006年）、十堰市西部污水处理厂（2006年）、十堰市东部污水处理厂（一期2006年，二期2012年）。" width="100%" height="100%"/>
+                    </s:NavigatorContent>
+
+                </mx:Accordion>
+
+                <s:Graphic width="100%" height="200">
+                    <s:BitmapImage id="city_sjtp" source="@Embed('/resources/district/商州区.jpg')" />
+                </s:Graphic>
+            </s:VGroup>
+        </s:NavigatorContent>
+
+        <s:NavigatorContent id="ncCounty" label="县级区划" >
+            <s:VGroup width="100%" height="100%">
+                <mx:Accordion id="accordionCounty" color="0x323232" width="100%" height="250">
+                   <s:NavigatorContent label="金属矿产开发" width="100%" height="100%"  icon="@Embed('/assets/Nav.png')">
+                        <mx:TextArea id="county_jskckf" text="可供开发利用的有7类38个矿床。其中以金、银、锑、石煤、稀土、绿松石等矿引人注目。竹山县银洞沟的湖北银矿是全省黄金和白银的主要产地之一。为全国八大金银矿之一。" width="100%" height="100%"/>
+                    </s:NavigatorContent>
+                    <s:NavigatorContent label="旅游资源" width="100%" height="100%" icon="@Embed('/assets/Nav.png')">
+                        <mx:TextArea id="county_lyzy" text="2012全年实现旅游总收入161.2亿元，比上年增长35.1%。其中，国际旅游外汇收入5649万美元，增长28.9%。全年接待国内外旅游人数2333.3万人次，增长25.2%。其中接待入境旅游者16.8万人次，增长26.6%。十堰旅游资源丰富，有世界文化遗产、道教圣地武当山、号称“世界水都，亚洲天池”的丹江口水库、房县的流放文化、楚长城及秀丽的十八里长峡、列为当年“世界考古十大发现”之首的“郧县人”遗址、恐龙蛋化石群和恐龙骨骼化石等。"  width="100%" height="100%"/>
+                    </s:NavigatorContent>
+                </mx:Accordion>
+
+
+                <s:Graphic width="100%" height="200">
+                    <s:BitmapImage id="couonty_sjtp" source="@Embed('/resources/district/宁陕县.jpg')"/>
+                </s:Graphic>
+            </s:VGroup>
+        </s:NavigatorContent>
+    </mx:TabNavigator>
+</flexlibContainer:WindowShade>
+
+

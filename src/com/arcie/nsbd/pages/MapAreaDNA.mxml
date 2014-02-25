@@ -3,20 +3,65 @@
          xmlns:s="library://ns.adobe.com/flex/spark"
          xmlns:esri="http://www.esri.com/2008/ags"
          xmlns:layers="com.arcie.nsbd.layers.*"
+         xmlns:mapcontrol="com.arcie.nsbd.mapcontrol.*"
+         xmlns:pages="com.arcie.nsbd.pages.*"
          creationComplete="MapCreateComplete()">
 
+    <fx:Declarations>
+        <esri:MapPoint id="clickLocation"/>
+        <esri:IdentifyTask id="identifyTask"
+                           concurrency="last"
+                           showBusyCursor="true"
+                           url="http://win-w15vzfmyjy7:8399/arcgis/rest/services/river/MapServer"/>
+        <esri:SimpleMarkerSymbol id="clickPtSym"
+                                 color="0xFF0000"
+                                 size="12"
+                                 style="cross">
+        <esri:SimpleLineSymbol width="2" color="0xFFFFFF"/>
+        </esri:SimpleMarkerSymbol>
+        <esri:SimpleMarkerSymbol id="smsIdentify"
+                                 alpha="0.5"
+                                 color="0x00FFFF"
+                                 size="20"
+                                 style="circle"/>
+        <mapcontrol:IdentifyFeature id="identifyFeature"
+                                    graphicsLayer="{identifyGraphicsLayer}"
+                                    map="{mainMap}"
+                                    clickLocation="{clickLocation}"
+                                    identifyTask="{identifyTask}"
+                                    clickPtSym="{clickPtSym}"
+                                    smsIdentify="{smsIdentify}"
+                />
+    </fx:Declarations>
     <fx:Script>
 		<![CDATA[
+        import com.arcie.nsbd.mapcontrol.MapCoordinatesShowTool;
+
         //地图初始化
         private function MapCreateComplete():void {
+            var statusBar:MapCoordinatesShowTool = new MapCoordinatesShowTool();
+            statusBar.map = mainMap;
+            statusBar.right = 20;
+            mainMap.addChild(statusBar);
+        }
 
+        import com.esri.ags.events.MapMouseEvent;
+
+        [Bindable]
+        public var list:Object = new Object();
+        [Bindable]
+        public var tabCODE:String;
+        [Bindable]
+        public var tabNAME:String;
+
+        public function clickFun(event:MapMouseEvent):void {
+            identifyFeature.mapClickHandler(event);
         }
         ]]>
 	</fx:Script>
 
-    <esri:Map id="mainMap"
-              logoVisible="false"
-              zoomSliderVisible="false">
+    <esri:Map id="mainMap" scaleBarVisible="false" zoomSliderVisible="false" logoVisible="false"
+              mapClick="clickFun(event)" creationComplete="identifyFeature.showCoordinatesWithMouse(event)">
 
         <!-- 调用TDT_MapServiceLayer加载天地图提供的瓦片图层，依次加载底图和地名层 -->
         <layers:TDT_MapServiceLayer id="baseMap_wmt"
@@ -66,7 +111,6 @@
                                     layerId="cta"
                                     visible="{btnBaseMaps.selectedIndex == 2}"/>
 
-        <!-- 调用ArcGISDynamicMapServiceLayer加载ArcGIS Server发布的河流水系矢量图层 -->
         <esri:ArcGISDynamicMapServiceLayer id="mapServer"
                                            url="http://win-w15vzfmyjy7:8399/arcgis/rest/services/ReservoirAreaDNA/MapServer"/>
 
@@ -88,5 +132,9 @@
         </s:dataProvider>
     </s:ButtonBar>
 
+
+    <s:BorderContainer cornerRadius="0" right="0" top="0">
+        <pages:RegionOverview id="regionOverview" width="400" height="450"/>
+    </s:BorderContainer>
 
 </s:Group>

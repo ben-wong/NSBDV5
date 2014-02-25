@@ -23,17 +23,17 @@
         <mx:ViewStack id="pageStores" top="60" width="100%" height="100%" left="0" y="0">
 
             <s:NavigatorContent label="库区DNA" width="100%" height="100%"
-                                visible="{tabButtons.selectedIndex == 0}">
+                                visible="{tabButtons.selectedIndex == 0}" icon="@Embed('/assets/DNA.png')">
                 <component:MapAreaDNA id="compAreaDNA" width="100%" height="100%">
                 </component:MapAreaDNA>
             </s:NavigatorContent>
             <s:NavigatorContent label="遥感对比图" width="100%" height="100%"
-                                visible="{tabButtons.selectedIndex == 1}">
+                                visible="{tabButtons.selectedIndex == 1}"  icon="@Embed('/assets/RemoteSensing.png')">
                 <component:MapRemoteSensing id="compRemoteSensing" width="100%" height="100%">
                 </component:MapRemoteSensing>
             </s:NavigatorContent>
             <s:NavigatorContent label="治污电子眼" width="100%" height="100%"
-                                visible="{tabButtons.selectedIndex == 2}">
+                                visible="{tabButtons.selectedIndex == 2}"  icon="@Embed('/assets/Pollutions.png')">
                 <component:MapPollutions id="compPollutions" width="100%" height="100%">
                 </component:MapPollutions>
 

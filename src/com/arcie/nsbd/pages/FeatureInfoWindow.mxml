@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   width="600" height="400"
+			   close="closeHandler(event)"
+			   initialize="init()" >
+
+	<fx:Script>
+		<![CDATA[
+			import com.esri.ags.Map;
+			
+			import mx.collections.ArrayList;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			private var _featureInfo:ArrayList;
+			public var tdtW:Map;
+			public function get featureInfo():ArrayList
+			{
+				return _featureInfo;
+			}
+
+			public function set featureInfo(value:ArrayList):void
+			{
+				_featureInfo = value;
+			}
+
+			public function init():void{
+				if(isPopUp)
+					PopUpManager.centerPopUp(this);
+/*				//第三种方式，为动态加载图片
+				var _loader:Loader = new Loader();
+				_loader.contentLoaderInfo.addEventListener(Event.COMPLETE,function(e:Event):void
+				{
+					img.source=e.currentTarget.content;
+				})
+				//可以将下面图片的路径换在数据库查出的值
+				_loader.load(new URLRequest("flex_src/com/arcie/nsbd/asset/V5.jpg"));
+				//这里说一个技巧  当url中有中文字体的话 使用encodeURI方法 如果没有 则可以不加
+				//_loader.load(new URLRequest(encodeURI("中国.jpg")));
+*/
+			}
+			protected function closeHandler(event:CloseEvent):void
+			{
+				PopUpManager.removePopUp(this);
+				tdtW.defaultGraphicsLayer.clear();			
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<!-- 根据数据库中不同的路径加载图片 -->
+	<!-- mx:Image id="img" width="20%" height="5%" verticalAlign="middle" horizontalAlign="center" -->
+	<mx:DataGrid id="userList" width="100%" height="100%" dataProvider="{_featureInfo}"/>
+</s:TitleWindow>

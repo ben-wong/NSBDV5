@@ -10,8 +10,10 @@
 
     <fx:Script>
         <![CDATA[
+        import com.arcie.nsbd.mapcontrol.MapCoordinatesShowTool;
         import com.esri.ags.events.ExtentEvent;
         import com.esri.ags.events.LayerEvent;
+        import com.esri.ags.layers.ArcGISDynamicMapServiceLayer;
 
         import mx.collections.ArrayCollection;
         import mx.events.FlexEvent;
@@ -32,8 +34,14 @@
 
         private var updatingMap:Map;
 
+        //地图初始化
         private function MapCreateComplete():void {
-            btnBaseMaps.selectedIndex = 1;
+            for (var i:int = 0; i < mapsArray.length; i++) {
+                var statusBar:MapCoordinatesShowTool = new MapCoordinatesShowTool();
+                statusBar.map = mapsArray[i];
+                statusBar.right = 20;
+                mapsArray[i].addChild(statusBar);
+            }
         }
 
         protected function initializeHandler(event:FlexEvent):void {
@@ -48,7 +56,6 @@
                 map.addEventListener(MouseEvent.MOUSE_WHEEL, actionStartHandler, true, 0, true);
                 map.addEventListener(MouseEvent.MOUSE_DOWN, actionStartHandler, true, 0, true);
             }
-
         }
 
         protected function extentChangeHandler(event:ExtentEvent):void {
@@ -81,7 +88,6 @@
     </fx:Script>
 
     <fx:Declarations>
-        <!-- Place non-visual elements (e.g., services, value objects) here -->
         <esri:Extent id="initialExtent"
                      xmin="105" ymin="31" xmax="112" ymax="35">
             <esri:SpatialReference wkid="4490"/>
@@ -96,9 +102,7 @@
               width="100%" height="100%"
               gap="1">
 
-        <esri:Map id="mapDNA"
-                  scaleBarVisible="false"
-                  zoomSliderVisible="false">
+        <esri:Map id="mapDNA" scaleBarVisible="false" zoomSliderVisible="false"  logoVisible="false">
 
             <layers:TDT_MapServiceLayer id="baseMap_wmt"
                                         baseURL="http://t0.tianditu.com/vec_c"
@@ -152,9 +156,7 @@
 
         </esri:Map>
 
-        <esri:Map id="mapRS"
-                  scaleBarVisible="false"
-                  zoomSliderVisible="false">
+        <esri:Map id="mapRS" scaleBarVisible="false" zoomSliderVisible="false"  logoVisible="false">
             <layers:TDT_MapServiceLayer id="baseMap_RS"
                                         baseURL="http://t0.tianditu.com/vec_c"
                                         serviceMode="KVP"
@@ -168,7 +170,8 @@
                                         tileMatrixSetId="c"
                                         layerId="cva"/>
 
-            <esri:ArcGISDynamicMapServiceLayer id="layer_RS" load="layer_loadHandler(event)"
+            <esri:ArcGISDynamicMapServiceLayer id="layer_RS"    alpha="0.9"
+                                               load="layer_loadHandler(event)"
                                                url="http://win-w15vzfmyjy7:8399/arcgis/rest/services/TDFB2010/MapServer"/>
 
         </esri:Map>
@@ -176,7 +179,7 @@
     </s:HGroup>
     <!-- 顶部切换天地图底图的按钮组  -->
     <s:ButtonBar id="btnBaseMaps"
-                 left="40" top="5"
+                 left="40" top="5" selectedIndex="1"
                  requireSelection="true">
         <s:dataProvider>
             <s:ArrayList>

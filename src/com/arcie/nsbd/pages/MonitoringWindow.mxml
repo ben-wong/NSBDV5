@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+               xmlns:s="library://ns.adobe.com/flex/spark"
+               xmlns:mx="library://ns.adobe.com/flex/mx"
+               width="800" height="400"
+               initialize="init()"
+               close="closeHandler(event)"
+        >
+    <fx:Script>
+		<![CDATA[
+        import mx.collections.ArrayCollection;
+        import mx.events.CloseEvent;
+        import mx.formatters.DateFormatter;
+        import mx.managers.PopUpManager;
+        import mx.utils.ObjectProxy;
+
+        import spark.skins.spark.SkinnableContainerSkin;
+
+        private static const DELAY:int = 3000;
+
+        private static const MAX_COUNT:int = 5;
+
+        [Bindable]
+
+        private var acLineChart:ArrayCollection;
+
+        [Bindable]
+
+        private var acDataGrid:ArrayCollection;
+
+        private var timer:Timer;
+
+        public  var _typeName:String;
+        public  var _name:String;
+        public  var _code:String;
+
+        public function setParams(typeName:String, name:String, code:String):void{
+            this._typeName = typeName;
+            this._name = name;
+            this._code = code;
+        }
+
+        public function init():void{
+            this.title = "实时水质监测 : " + _typeName + "  " +  _name;
+            if(!timer)
+            {
+                timer = new Timer(DELAY);
+                timer.addEventListener(TimerEvent.TIMER, timer_timerHandler);
+            }
+            timer.start();
+        }
+
+
+        private var detailFormater:DateFormatter = new DateFormatter();
+        private var timeFormater:DateFormatter = new DateFormatter();
+
+        protected function timer_timerHandler(event:TimerEvent):void
+        {
+            var now:Date = new Date();
+            var nowTime:String;
+            var nowDetail:String;
+            detailFormater.formatString = "YYYY-MM-DD JJ:NN:SS";
+            timeFormater.formatString = "JJ:NN:SS";
+
+            if(!acLineChart)
+            {
+                acLineChart = new ArrayCollection();
+                acDataGrid = new ArrayCollection();
+                now.setTime(now.time-1000*MAX_COUNT);
+
+                for (var i:int = 0; i < MAX_COUNT; i++)
+                {
+                    nowTime = timeFormater.format(now);
+                    acLineChart.addItem(new ObjectProxy({time:nowTime, sewage:4.5+Math.round(Math.random() * 10) * .1}));
+
+                    nowDetail  = detailFormater.format(now);
+                    acDataGrid.addItemAt(new ObjectProxy({time:nowDetail, sewage:4.5+Math.round(Math.random() * 10) * .1, level:Math.ceil(Math.random()*6)}), 0);
+
+                    now.setTime(now.time + 1000);
+                }
+            }
+
+            nowTime = timeFormater.format(now);
+            var item:ObjectProxy = new ObjectProxy({time:nowTime, sewage:4.5+Math.round(Math.random() * 10) * .1});
+            if(acLineChart.length < 5)
+            {
+                acLineChart.addItem(item);
+            }
+            else
+            {
+                acLineChart.removeItemAt(0);
+                acLineChart.addItem(item);
+            }
+
+            nowDetail  = detailFormater.format(now);
+            var itemX:ObjectProxy = new ObjectProxy({time:nowDetail, sewage:4.5+Math.round(Math.random() * 10) * .1, level:Math.ceil(Math.random()*6)});
+            if(acDataGrid.length < 100)
+            {
+                acDataGrid.addItemAt(itemX, 0);
+            }
+            else
+            {
+                acDataGrid.removeItemAt(acDataGrid.length-1);
+                acDataGrid.addItemAt(itemX, 0);
+            }
+        }
+
+        protected function closeHandler(event:CloseEvent):void
+        {
+            PopUpManager.removePopUp(this);
+        }
+
+        ]]>
+	</fx:Script>
+    <fx:Declarations>
+        <!-- 将非可视元素（例如服务、值对象）放在此处 -->
+    </fx:Declarations>
+    <!-- 根据数据库中不同的路径加载图片 -->
+    <!-- mx:Image id="img" width="20%" height="5%" verticalAlign="middle" horizontalAlign="center" -->
+
+    <s:Panel width="100%" height="100%" horizontalCenter="0" bottom="0"
+             skinClass="spark.skins.spark.SkinnableContainerSkin">
+        <s:BorderContainer width="100%" height="100%"
+                           backgroundImage="@Embed(source='/assets/monitor_back.jpg')">
+            <s:layout>
+                <s:HorizontalLayout/>
+            </s:layout>
+            <mx:DataGrid dataProvider="{acDataGrid}" width="300" height="100%" fontSize="14" horizontalCenter="0" >
+                <mx:columns>
+                    <mx:DataGridColumn headerText="时间"  dataField="time" sortable="false" width="160"/>
+                    <mx:DataGridColumn headerText="水质" dataField="level" width="60"/>
+                    <mx:DataGridColumn headerText="流量(m³/s)" dataField="sewage" width="80"/>
+                </mx:columns>
+            </mx:DataGrid>
+
+            <mx:LineChart id="chart" width="500" height="100%" dataProvider="{acLineChart}"
+                          horizontalCenter="0" showDataTips="true" bottom="0" x="14"  fontSize="14">
+                <mx:horizontalAxis>
+                    <mx:CategoryAxis categoryField="time" displayName="" title="时间" dataProvider="{acLineChart}"/>
+                </mx:horizontalAxis>
+                <mx:verticalAxis>
+                    <mx:LinearAxis minimum="4" maximum="6"/>
+                </mx:verticalAxis>
+                <mx:series>
+                    <mx:LineSeries displayName="" yField="sewage" form="segment"/>
+                </mx:series>
+            </mx:LineChart>
+
+        </s:BorderContainer>
+    </s:Panel>
+
+</s:TitleWindow>

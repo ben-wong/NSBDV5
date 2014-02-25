@@ -2,6 +2,7 @@
   <library name="agslib-3.1-2012-12-12" type="flex">
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/lib/agslib-3.1-2012-12-12.swc!/" />
+      <root url="jar://$PROJECT_DIR$/lib/flexlib.swc!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
